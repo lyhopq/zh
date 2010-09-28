@@ -1,0 +1,21 @@
+TCP IP Socket IN C
+翻译 by Lyh
+%%date(%Y-%m-%d)
+
+==========================
+
+%%toc
+
+==========================
+
+= 关于本文 =[about]
+
+本文根据*TCP IP Socket In C Second Edition*翻译
+
+本文之翻译是属于笔者的学习笔记性质，存在错误和疏漏实属必然，欢迎指正和修改。
+
+===========================
+
+%!include: chap1.txt
+
+%!include: chap2.txt
