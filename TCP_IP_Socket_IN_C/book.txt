@@ -19,3 +19,15 @@ TCP IP Socket IN C
 %!include: chap1.txt
 
 %!include: chap2.txt
+
+===========================
+
+The End
+([查看源文件 %%infile])
+ [resource/txt2tags.png]
+
+
+========================================================
+最后一次修订于：%%mtime(%Y-%m-%d %X)
+
+
