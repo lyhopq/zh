@@ -22,6 +22,10 @@ TCP IP Socket IN C
 
 ===========================
 
+%!include: english.txt
+
+===========================
+
 The End
 ([查看源文件 %%infile])
  [resource/txt2tags.png]
@@ -31,3 +35,26 @@ The End
 最后一次修订于：%%mtime(%Y-%m-%d %X)
 
 
+||              RC 文件的位置             ||
+|          Windows | ``%HOMEPATH%\_t2trc``
+|  Linux and other | ``$HOME/.txt2tagsrc``
+|     User defined | ``T2TCONFIG`` 环境变量
+
+
+
+txt2tags的全部标记概览：
+||                   基本                   ||           美化          ||
+|          //头部// |  First 3 lines       |            //粗体// |  ""**words**"" 
+|            //标题// |  = words =           |          //斜体// |  ""//words//"" 
+|   //带编号的标题// |  + words +           |       //下划线// |  ""__words__"" 
+|        //段落// |  words               |          //删除线// |  ""--words--"" 
+|            //链接// |  ""[label url]""     |      //等宽// |  ""``words``"" 
+|            //图片// |  ""[filename.jpg]""  |        //原始文字// |  """"words"""" 
+||                                          其他                                ||||
+|            //引用// |  <TAB>words          |  //分隔线// |  ------------... 
+|             //列表// |  - words             |     //粗分隔线// |  ============... 
+|    //编号列表// |  + words             |           //表格// |  ""| cell1 | cell2 | cell3..."" 
+|  //定义列表// |  : words             |          //锚点（标签）// |  = title =[anchor] 
+|     //注释行// |  % comments          |    //注释域// |  %%%\n comments \n%%% 
+|    //完全引用行// |  ""```"" word        |   //完全引用域// |  ""```\n lines \n```"" 
+|         //原文行// |  """"""" words       |        //原文域// |  """""""\n lines \n""""""" 
