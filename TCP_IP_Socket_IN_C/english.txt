@@ -3,4 +3,6 @@
 
 : sanity checking
 完整性检查
+: in all likelihood
+在所有的可能性中
 
