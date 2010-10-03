@@ -1,8 +1,18 @@
 
 = 精彩词汇、短语、句子集锦 =
 
+== 词汇 ==
+
+: vulnerability
+易受攻击的、弱点、漏洞
+
+
+== 短语 ==
 : sanity checking
 完整性检查
 : in all likelihood
 在所有的可能性中
+
+
+== 句子 ==
 
