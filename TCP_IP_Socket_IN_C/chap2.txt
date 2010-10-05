@@ -1,7 +1,7 @@
 
 + 基本 TCP Socket +[chap2-basic]
 
-现在是你学习 如何写自己的套接字应用程序的时候了。我们将从YCP开始。现在你或许已经做好了直接写一些实际的代码的时候了，因此我们开始进行一个TCP客户端和服务器的工作实例。然后我们呈现在基本TCP中使用的套接字API的细节。为了使事情变得简单，我们最初的代码使用一个特定的IP版本：IPv4，它现在，在很大程度上，仍然在网际协议中占主导地位。在本章的结尾部分，我们讲呈现客户端和服务器的IPv6改进版本。在[第三章 #chap3]我们将要示范创建与协议无关的应用程序。
+现在是你学习 如何写自己的套接字应用程序的时候了。我们将从YCP开始。现在你或许已经做好了直接写一些实际的代码的时候了，ockaddr_in**结构体，此我们开始进行一个TCP客户端和服务器的工作实例。然后我们呈现在基本TCP中使用的套接字API的细节。为了使事情变得简单，我们最初的代码使用一个特定的IP版本：IPv4，它现在，在很大程度上，仍然在网际协议中占主导地位。在本章的结尾部分，我们讲呈现客户端和服务器的IPv6改进版本。在[第三章 #chap3]我们将要示范创建与协议无关的应用程序。
 
 我们的客户端和服务器例子执行 //echo// 协议。它的工作原理如下：客户端连接到服务器病发送它的数据。服务器简单的回显他所收到的信息到客户端并断开连接。在我们的应用程序中，客户端发送的数据是一个作为提供给命令行参数的字符串。我们的客户端将打印它从服务器收到的数据，这样我们就能看见传回来的是什么东西。许多系统都有一个回显服务来进行调试和测试。
 
@@ -20,7 +20,7 @@
 
 **TCPEchoClient4.c**
 ----------------------------
-%!include: ``code/chap1/TCPEchoClient4.c``
+%!include: ``code/chap2/TCPEchoClient4.c``
 
 我们的 ``TCPEchoClient4.c`` 做以下事情：
 
@@ -89,7 +89,7 @@ DieWithSystemMessage(const char *msg)
 
 **DieWithMessage.c**
 ----------------------------
-%!include: ``code/chap1/DieWithMessage.c``
+%!include: ``code/chap2/DieWithMessage.c``
 
 
 如果我们编译了``TCPEchoClient4.c``和``DieWithMessage.c``将会生成程序``TCPEchoClient4，我们可以使用如下方式和一个网络地址为``169.1.1.1``的回显服务器通信：
@@ -118,7 +118,7 @@ Received: Echo this!
 
 **TCPEchoCServer4.c**
 ---------------------------
-%!include: ``code/chap1/TCPEchoServer4.c``
+%!include: ``code/chap2/TCPEchoServer4.c``
 
 + **程序建立和参数解析**：1-17行
 : 
@@ -139,6 +139,52 @@ Received: Echo this!
  ``listen()``函数告诉TCP实现允许来自客户端的连接。在调用``listen()``之前，任何连接到该套接字的请求都会被默默地拒绝——也就是，在客户端的``connect()``会失败。
 + **反复处理接入连接**：39-59行
  - **接受一个接入连接**：40-47行
+ : 
+ 正如我们上面讨论的，一个调用了``listen()``函数的套接字与客户端程序中的使用不同。服务器程序在套接字上调用``accept()``函数，而不是发送和接收。``accept()``函数阻塞直到在监听的套接字端口上有一个接入的连接为止。在这个时候，``accept()``返回一个新套接字的描述符，它已经连接到了初始的远端套接字。第二个参数是指向一个**sockaddr_in**结构体的指针，第三个参数是指向该结构体大小的 指针。若果连接成功，``sockaddr_in``里有客户
+ 端所连接的套接字的网络地址和端口号；地址的长度被写入由第三个参数所指的整形指针里面。注意有返回描述符所指的套接字已经被连接了；这意味着已经准备好了发送和接受数据。（对于底层所发生的详情，见[7.4.1 #chap7.4.1]节。
+ - **报告连接的客户端**：51-56行
+ : 
+ 现在//clntAddr//含有所连接的客户端的地址和端口号；我们提供一个“呼叫ID”程序并打印客户端信息。它把二进制表示的客户端地址转换为四点分字符串。因为实现使用所谓的网络字节序（见[5.1.2]）来处理端口和地址，所以我们不得不在把端口号传递到``printf()``之前转换它（``inet_pton``是用来转化地址的）。
+ - **处理回显客户端**：58行
+ : 
+ ``HandleTCPClient()``管理“应用程序协议”。我们在下面讨论它。这样我们就提取出了该服务器的特定的“回显”部分。
+
+
+我们把回显服务器的实现“回显”的部的提取出来。虽然该//应用程序协议//实现起来只有几行，但是把它与其它的代码分离起来在实践中是一个好的设计。
+
+``HandleTCPClient()``从给定的套接字接收数据并且把数据返回到同一个套接字，累接直到``recv()``返回正值为止（指示有数据被接受了）。``recv()``阻塞直到接收到了数据或客户端关闭了连接。当客户端正常的关闭了连接，``recv()``返回0。你可以在``TCPServerUtility.c``文件中找到``HandleTCPClient()``函数。
+
+**HandleTCPClient()**
+----------------------------
+```
+void HanfleTCPClient(int clntSocket)
+{
+    char buffer[BUFSIZE];   // Buffer for echo string
+
+    // Receive message from client
+    ssize_t numBytesRcvd = recv(clntSocket, buffer, BUFSIZE, 0);
+    if(numBytesRcvd < 0)
+        DieWithSystemMessage("recv() failed");
+
+    // Send received steing and receive again until end of stream
+    while(numBytesRcvd > 0) // 0 indicates end of stream
+    {
+        // Echo message back to client
+        ssize_t numBytesSent = send(clntSocket, buffer, numBytesRcvd, 0);
+        if(numBytesSent < 0)
+            DieWithSystemMessage("send() failed");
+        else if(numBytesSent != numBytesRcvd)
+            DieWithUserMessage("send()", "send unexpected number of bytes");
+
+        // See if there is more data to rective
+        numBytesRcvd = recv(clntSocket, buffer, BUFZIE, 0);
+        if(numBytesRcvd < 0)
+            DieWithSystemMessage("recv() failed");
+    }
+
+    close(clntSocket);  // Close client socket
+}
+```
 
 
 
