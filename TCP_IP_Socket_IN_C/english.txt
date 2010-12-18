@@ -5,6 +5,10 @@
 
 : vulnerability
 易受攻击的、弱点、漏洞
+: bogus
+假的，伪造的
+: semantic
+语义的，语义
 
 
 == 短语 ==
@@ -12,6 +16,9 @@
 完整性检查
 : in all likelihood
 在所有的可能性中
+: in this sense
+从这个意义上讲
+
 
 
 == 句子 ==

@@ -20,6 +20,8 @@ TCP IP Socket IN C
 
 %!include: chap2.txt
 
+%!include: chap3.txt
+
 ===========================
 
 %!include: english.txt
